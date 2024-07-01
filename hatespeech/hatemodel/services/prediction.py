@@ -39,6 +39,6 @@ def predict(data):
     data = lemmatizing(clean(data))
     input_data = vect.transform(data.split(" "))
     prediction = model.predict(input_data)
-    print(prediction)
+    return prediction
 
 #predict("You're a stupid bitch!!")

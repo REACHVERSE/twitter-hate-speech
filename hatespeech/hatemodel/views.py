@@ -11,7 +11,8 @@ class PredictionView(APIView):
         try:
             data = json.loads(request.body)
             prediction = predict(data)
-            return Response("{Prediction}:prediction")
+            print(prediction)
+            return Response({"prediction":prediction})
         except json.JSONDecodeError:
             raise ParseError("Request must be valid JSON")   
         except Exception as e:
