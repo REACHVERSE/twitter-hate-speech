@@ -1,16 +1,12 @@
-import pandas as pd
-from rest_framework import status
 import pickle
-import json
-from sklearn.feature_extraction.text import TfidfVectorizer
 from nltk.tokenize import word_tokenize
 from nltk.stem import WordNetLemmatizer
 from nltk.corpus import stopwords
+
 stop_words = set(stopwords.words('english'))
 import re
 
-
-model = pickle.load(open("/workspaces/codespaces-blank/ml_model.pkl", 'rb'))
+model = pickle.load(open("ml_model.pkl", 'rb'))
 
 def clean(text):
         text = str(text).lower()
@@ -30,7 +26,7 @@ def lemmatizing(data):
     return data
 
 #declaring the saved vectorizer
-vect = pickle.load(open("/workspaces/codespaces-blank/vectorizer.pkl", "rb"))
+vect = pickle.load(open("vectorizer.pkl", "rb"))
 
 
 def predict(data):
@@ -39,6 +35,7 @@ def predict(data):
     data = lemmatizing(clean(data))
     input_data = vect.transform(data.split(" "))
     prediction = model.predict(input_data)
+    #print(prediction)
     return prediction
 
 #predict("You're a stupid bitch!!")
