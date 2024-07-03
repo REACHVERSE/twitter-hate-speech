@@ -10,3 +10,6 @@ matplotlib
 wordcloud
 gunicorn
 uvicorn
+psycopg2-binary
+dj-database-url
+whitenoise
