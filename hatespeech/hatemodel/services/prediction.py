@@ -6,7 +6,7 @@ from nltk.corpus import stopwords
 stop_words = set(stopwords.words('english'))
 import re
 
-model = pickle.load(open("ml_model.pkl", 'rb'))
+model = pickle.load(open("hatemodel/services/savedmodel.pkl", 'rb'))
 
 def clean(text):
         text = str(text).lower()
@@ -26,16 +26,25 @@ def lemmatizing(data):
     return data
 
 #declaring the saved vectorizer
-vect = pickle.load(open("vectorizer.pkl", "rb"))
+vect = pickle.load(open("hatemodel/services/vectoriser.pkl", "rb"))
 
 
 def predict(data):
     #defining a function to clean text
-    print(data)
+    #print(data)
     data = lemmatizing(clean(data))
     input_data = vect.transform(data.split(" "))
     prediction = model.predict(input_data)
-    #print(prediction)
-    return prediction
+
+    if 1 in prediction:
+        output = "Hate speech detected"
+
+    else:
+         output = "No hate speech detected"
+    #print(type(prediction))
+    print(output)
+    return output
+    
 
 #predict("You're a stupid bitch!!")
+#{"body":"You're a stupid bitch!!"}
