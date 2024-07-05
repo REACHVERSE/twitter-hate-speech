@@ -2,6 +2,7 @@ import pickle
 from nltk.tokenize import word_tokenize
 from nltk.stem import WordNetLemmatizer
 from nltk.corpus import stopwords
+import pandas as pd
 
 stop_words = set(stopwords.words('english'))
 import re
@@ -46,5 +47,3 @@ def predict(data):
     return output
     
 
-#predict("You're a stupid bitch!!")
-#{"body":"You're a stupid bitch!!"}

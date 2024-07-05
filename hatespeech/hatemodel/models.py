@@ -1,10 +1,10 @@
 from calendar import day_abbr
 from django.db import models
+from numpy import blackman
 
 
 # Create your models here.
 class Prediction(models.Model):
-   
     date = models.DateField(auto_now_add=True)
     #day_of_week = models.CharField(max_length=11, blank=True)
     text = models.CharField(max_length=500, null = False, blank = False)

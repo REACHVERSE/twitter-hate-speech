@@ -11,8 +11,7 @@ class PredictionSerializer(serializers.ModelSerializer):
             "date",
             "text",
             "prediction",
-            #"day_of_week",
-            "id"
+            "id",
         ]
     
 class ReviewSerializer(serializers.ModelSerializer):

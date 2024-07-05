@@ -45,8 +45,8 @@ df['Text'] = df['Text'].apply(lambda x: lemmatizing(x))
 vect2 = TfidfVectorizer(ngram_range=(1,3)).fit(df['Text'])
 
 feature_names = vect2.get_feature_names_out()
-print("Number of features: {} \n".format(len(feature_names)))
-print("First 20 features: \n{}".format(feature_names[0:20]))
+#print("Number of features: {} \n".format(len(feature_names)))
+#print("First 20 features: \n{}".format(feature_names[0:20]))
 
 X = vect2.transform(df['Text'])
 Y = df['oh_label']
@@ -69,20 +69,24 @@ print(confusion_matrix(y_test, logreg_predict))
 print("\n")
 print(classification_report(y_test, logreg_predict))
 """
-#implementing Logistic regression model with hyperparameter tuning with GridSearchCV
+"""#implementing Logistic regression model with hyperparameter tuning with GridSearchCV
 param_grid = {'C':[100, 10, 1.0, 0.1, 0.01], 'solver':['newton-cg', 'lbfgs', 'liblinear']}
 grid = GridSearchCV(LogisticRegression(), param_grid, cv = 5)
 grid.fit(x_train, y_train)
 print("Best cross-validation score: {:.2f}\n".format(grid.best_score_))
 print("Best parameters: {}".format(grid.best_params_))
+"""
 
-y_pred = grid.predict(x_test)
+"""y_pred = grid.predict(x_test)
 grid_acc = accuracy_score(y_pred, y_test)
 print("Test accuracy: {:.2f}%".format(grid_acc*100))
 
 print(confusion_matrix(y_test, y_pred))
-print("\n")
+print('\n')
 print(classification_report(y_test, y_pred))
 
 # Export the Trained Model using Pickle
-pickle.dump(grid, open('ml_model.pkl', 'wb'))
+pickle.dump(grid, open('ml_model.pkl', 'wb'))"""
+
+model = pickle.load(open("hatemodel/services/savedmodel.pkl", 'rb'))
+accuracy = accuracy_score(model.predict(x_test), y_test)*100
