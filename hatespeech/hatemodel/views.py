@@ -17,14 +17,16 @@ class PredictView(APIView,):
     #serializer_class = PredictionSerializer
     def post(self, request):
         try:
-            data = json.loads(request.body)
-            prediction = predict(data)
+            #data = request.data
+            predtext = request.data#.get("text")
+            print(predtext)
+            prediction = predict(predtext)
             print(prediction)
-            prediction_obj = Prediction.objects.create(text=data.get("body"), prediction=prediction)
+            prediction_obj = Prediction.objects.create(text=predtext, prediction=prediction)
             predaccuracy = ("{:.2f}%".format(accuracy))
 
             return Response(
-                {"text": data.get("body"), "prediction": prediction, "id": prediction_obj.id,  'accuracy' : predaccuracy}, 
+                {"text": predtext, "prediction": prediction, "id": prediction_obj.id,  'accuracy' : predaccuracy}, 
                 status=status.HTTP_201_CREATED,
             )
             #return Response({"prediction":prediction})
