@@ -8,8 +8,8 @@ import json
 from datetime import date, datetime, timedelta
 from django.db.models import Count, Q
 
-from .models import Prediction
-from .serialisers import PredictionSerializer
+from .models import Prediction, Review
+from .serialisers import PredictionSerializer, ReviewSerializer
 
 from hatemodel.services.prediction import predict
 
@@ -102,3 +102,25 @@ class PredictionCountByPredictionView(APIView):
 
     return Response(response_data)
 
+class ReviewPostView(APIView):
+    serializer_class = ReviewSerializer
+    queryset = Review.objects.all()
+    def post(self, request):
+        #print(json.loads(request))
+        try:
+            text = Prediction.objects.last().text
+            reviewobj = Review.objects.create(text = text, remarks = request.data.get("remarks"), classification = request.data.get("classification"))
+
+            return Response(
+                {"text": text, "remarks":reviewobj.remarks, "classification": reviewobj.classification},
+                status=status.HTTP_201_CREATED,
+            )
+            #return Response({"prediction":prediction})
+        except json.JSONDecodeError:
+            raise ParseError("Request must be valid JSON")   
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+class ReviewListView(generics.ListAPIView):
+    queryset = Review.objects.all()
+    serializer_class = ReviewSerializer

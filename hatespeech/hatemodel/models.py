@@ -10,11 +10,11 @@ class Prediction(models.Model):
     text = models.CharField(max_length=500, null = False, blank = False)
     prediction = models.CharField(max_length=25)
 
-    """def save(self, *args, **kwargs):
-        
-        #Override the save method to calculate and store the day of the week.
-        
-        #self.day_of_week = self.date("%A")  # Full day name (Monday, Tuesday, etc.)
-        if self.date:
-            self.day_of_week = day_abbr(self.date.year, self.date.month, self.date.day)
-            super().save(*args, **kwargs)"""
+class Review(models.Model):
+    class_choices = {
+        1:"Hate speech detected",
+        0:"No hate speech detected"
+    }
+    text = models.CharField(max_length = 500, blank = False, null = False)
+    remarks = models.TextField(max_length=200, blank = True)
+    classification = models.CharField(null = False, blank = False, max_length=25, choices = class_choices)
