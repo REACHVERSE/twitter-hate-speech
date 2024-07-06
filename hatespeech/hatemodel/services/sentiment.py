@@ -92,5 +92,5 @@ print(classification_report(y_test, y_pred))
 # Export the Trained Model using Pickle
 pickle.dump(grid, open('ml_model.pkl', 'wb'))"""
 
-model = pickle.load(open(os.path.join(project_root, 'hatespeech','hatemodel','services','savedmodel.pkl')'rb'))
+model = pickle.load(open(os.path.join(project_root, 'hatespeech','hatemodel','services','savedmodel.pkl'),'rb'))
 accuracy = accuracy_score(model.predict(x_test), y_test)*100
