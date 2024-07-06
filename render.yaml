@@ -7,10 +7,10 @@ databases:
 services:
   - type: web
     plan: free
-    name: mysite
+    name: hatespeech
     runtime: python
     buildCommand: "./build.sh"
-    startCommand: "python -m gunicorn hatespeech/hatespeech.asgi:application -k uvicorn.workers.UvicornWorker"
+    startCommand: "./startcommands.sh"
     envVars:
       - key: DATABASE_URL
         fromDatabase:
