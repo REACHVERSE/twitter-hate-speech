@@ -3,11 +3,13 @@ from nltk.tokenize import word_tokenize
 from nltk.stem import WordNetLemmatizer
 from nltk.corpus import stopwords
 import pandas as pd
+import os
+project_root = os.getenv('PROJECT_ROOT')
 
 stop_words = set(stopwords.words('english'))
 import re
 
-model = pickle.load(open("hatemodel/services/savedmodel.pkl", 'rb'))
+model = pickle.load(open(os.path.join(project_root, 'hatespeech','hatemodel','services','savedmodel.pkl'),'rb'))
 
 def clean(text):
         text = str(text).lower()
@@ -27,7 +29,7 @@ def lemmatizing(data):
     return data
 
 #declaring the saved vectorizer
-vect = pickle.load(open("hatemodel/services/vectoriser.pkl", "rb"))
+vect = pickle.load(open(os.path.join(project_root, 'hatespeech','hatemodel','services','vectorizer.pkl'),'rb'))
 
 
 def predict(data):
