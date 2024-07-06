@@ -5,6 +5,9 @@ set -o errexit
 # Modify this line as needed for your package manager (pip, poetry, etc.)
 pip install -r requirements.txt
 
+#downloading bltk stopwords and punkt
+python -c "import nltk; nltk.download('stopwords,punkt')"
+
 # Convert static asset files
 python hatespeech/manage.py collectstatic --no-input
 
