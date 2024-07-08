@@ -20,7 +20,7 @@ import os
 project_root = os.getenv('PROJECT_ROOT')
 
 #df = pd.read_csv(r'/workspaces/codespaces-blank/twitter_parsed_dataset.csv')
-df = pd.read_csv(os.path.join(project_root, 'twitter_parsed_dataset.csv'))
+df = pd.read_csv(os.path.join(project_root, 'hatespeech','twitter_parsed_dataset.csv'))
 df = df.dropna()
 
 #defining a function to clean text
