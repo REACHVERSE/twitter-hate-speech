@@ -1,0 +1,1 @@
+web: gunicorn .hatespeech/hatespeech.asgi:application -k uvicorn.workers.UvicornWorker

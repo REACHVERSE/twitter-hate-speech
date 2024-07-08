@@ -17,7 +17,7 @@ python -c "import nltk; nltk.download('wordnet')"
 
 
 # Convert static asset files
-#python hatespeech/manage.py collectstatic --no-input
+python hatespeech/manage.py collectstatic --no-input
 
 # Apply any outstanding database migrations
-#python hatespeech/manage.py migrate
+python hatespeech/manage.py migrate
