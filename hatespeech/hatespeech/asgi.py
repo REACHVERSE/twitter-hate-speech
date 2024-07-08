@@ -11,6 +11,8 @@ import os
 
 from django.core.asgi import get_asgi_application
 
+import hatespeech.hatemodel as hatemodel
+
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "hatespeech.hatespeech.settings")
 
 application = get_asgi_application()
