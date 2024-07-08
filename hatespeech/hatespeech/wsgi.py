@@ -12,7 +12,7 @@ import os
 from django.core.wsgi import get_wsgi_application
 #import hatespeech.hatespeech.asgi
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "hatespeech.settings")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "hatespeech.hatespeech.settings")
 
 application = get_wsgi_application()
 
