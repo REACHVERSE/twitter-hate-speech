@@ -1,1 +1,1 @@
-web: gunicorn .hatespeech/hatespeech.asgi:application --log-file -
+web: gunicorn hatespeech/hatespeech.asgi:application --log-file -
