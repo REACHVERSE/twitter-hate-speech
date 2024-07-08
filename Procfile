@@ -1,1 +1,1 @@
-web: gunicorn .hatespeech/hatespeech.asgi:application -k uvicorn.workers.UvicornWorker
+web: gunicorn .hatespeech/hatespeech.asgi:application --log-file -
