@@ -9,9 +9,9 @@ from nltk.corpus import stopwords
 stop_words = set(stopwords.words('english'))
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.model_selection import train_test_split
-from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import accuracy_score, classification_report, confusion_matrix, ConfusionMatrixDisplay
-from sklearn.model_selection import GridSearchCV
+#from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import accuracy_score #, classification_report, confusion_matrix, ConfusionMatrixDisplay
+#from sklearn.model_selection import GridSearchCV
 import warnings
 warnings.filterwarnings('ignore')
 import pickle
