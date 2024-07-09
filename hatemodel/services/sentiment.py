@@ -19,8 +19,8 @@ import pickle
 import os
 project_root = os.getenv('PROJECT_ROOT')
 
-#df = pd.read_csv(r'/workspaces/codespaces-blank/hatespeech/twitter_parsed_dataset.csv')
-df = pd.read_csv(os.path.join(project_root, 'twitter_parsed_dataset.csv'))
+df = pd.read_csv(r'twitter_parsed_dataset.csv')
+#df = pd.read_csv(os.path.join(project_root, 'twitter_parsed_dataset.csv'))
 df = df.dropna()
 
 #defining a function to clean text
@@ -92,6 +92,6 @@ print(classification_report(y_test, y_pred))
 # Export the Trained Model using Pickle
 pickle.dump(grid, open('ml_model.pkl', 'wb'))"""
 
-#model = pickle.load(open('/workspaces/codespaces-blank/hatespeech/hatemodel/services/savedmodel.pkl', 'rb'))
-model = pickle.load(open(os.path.join(project_root, 'hatemodel','services','savedmodel.pkl'),'rb'))
+model = pickle.load(open('hatemodel/services/savedmodel.pkl', 'rb'))
+#model = pickle.load(open(os.path.join(project_root, 'hatemodel','services','savedmodel.pkl'),'rb'))
 accuracy = accuracy_score(model.predict(x_test), y_test)*100
