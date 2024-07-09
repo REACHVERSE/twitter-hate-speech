@@ -10,7 +10,7 @@ stop_words = set(stopwords.words('english'))
 import re
 
 #model = pickle.load(open('/workspaces/codespaces-blank/hatespeech/hatemodel/services/savedmodel.pkl', 'rb'))
-model = pickle.load(open(os.path.join(project_root, 'hatespeech','hatemodel','services','savedmodel.pkl'),'rb'))
+model = pickle.load(open(os.path.join(project_root,'hatemodel','services','savedmodel.pkl'),'rb'))
 
 def clean(text):
         text = str(text).lower()
@@ -31,7 +31,7 @@ def lemmatizing(data):
 
 #declaring the saved vectorizer
 #vect = pickle.load(open('/workspaces/codespaces-blank/hatespeech/hatemodel/services/vectoriser.pkl', 'rb'))
-vect = pickle.load(open(os.path.join(project_root, 'hatespeech','hatemodel','services','vectorizer.pkl'),'rb'))
+vect = pickle.load(open(os.path.join(project_root, 'hatemodel','services','vectorizer.pkl'),'rb'))
 
 
 def predict(data):

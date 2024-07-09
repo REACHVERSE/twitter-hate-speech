@@ -20,7 +20,7 @@ import os
 project_root = os.getenv('PROJECT_ROOT')
 
 #df = pd.read_csv(r'/workspaces/codespaces-blank/hatespeech/twitter_parsed_dataset.csv')
-df = pd.read_csv(os.path.join(project_root, 'hatespeech','twitter_parsed_dataset.csv'))
+df = pd.read_csv(os.path.join(project_root, 'twitter_parsed_dataset.csv'))
 df = df.dropna()
 
 #defining a function to clean text
@@ -93,5 +93,5 @@ print(classification_report(y_test, y_pred))
 pickle.dump(grid, open('ml_model.pkl', 'wb'))"""
 
 #model = pickle.load(open('/workspaces/codespaces-blank/hatespeech/hatemodel/services/savedmodel.pkl', 'rb'))
-model = pickle.load(open(os.path.join(project_root, 'hatespeech','hatemodel','services','savedmodel.pkl'),'rb'))
+model = pickle.load(open(os.path.join(project_root, 'hatemodel','services','savedmodel.pkl'),'rb'))
 accuracy = accuracy_score(model.predict(x_test), y_test)*100
