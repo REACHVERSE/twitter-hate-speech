@@ -57,7 +57,7 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "corsheaders.middleware.CorsMiddleware",
-    "django_asgi_lifespan.middleware.ASGIApplication"
+    "django_asgi_lifespan.middleware.LifespanStateMiddleware"
 ]
 
 ROOT_URLCONF = "hatespeech.urls"
