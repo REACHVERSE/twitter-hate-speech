@@ -142,12 +142,13 @@ STATIC_URL = 'static/'
     STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'"""
 
 STATIC_ROOT = BASE_DIR / "staticfiles"
-STORAGES = {
+STATICFILES_STORAGE = "django.contrib.staticfiles.storage.StaticFilesStorage"
+"""STORAGES = {
     # ...
     "staticfiles": {
         "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
     },
-}
+}"""
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
