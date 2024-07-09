@@ -1,1 +1,1 @@
-web: DJANGO_SETTINGS_MODULE=hatespeech.settings gunicorn hatespeech.wsgi:application -k uvicorn.workers.UvicornWorker --log-file -
+web: DJANGO_SETTINGS_MODULE=hatespeech.settings gunicorn hatespeech.wsgi:application --log-file -

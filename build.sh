@@ -21,3 +21,4 @@ python -c "import nltk; nltk.download('wordnet')"
 
 # Apply any outstanding database migrations
 #python hatespeech/manage.py migrate
+
