@@ -7,7 +7,7 @@ from nltk.tokenize import word_tokenize
 from nltk.stem import WordNetLemmatizer
 from nltk.corpus import stopwords
 stop_words = set(stopwords.words('english'))
-from sklearn.feature_extraction.text import TfidfVectorizer
+#from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.model_selection import train_test_split
 #from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score #, classification_report, confusion_matrix, ConfusionMatrixDisplay
@@ -46,7 +46,8 @@ def lemmatizing(data):
 df['Text'] = df['Text'].apply(lambda x: lemmatizing(x))
 
 #initialising the vectoriser with a trigram language model
-vect2 = TfidfVectorizer(ngram_range=(1,3)).fit(df['Text'])
+#vect2 = TfidfVectorizer(ngram_range=(1,3)).fit(df['Text'])
+vect2 = pickle.load(open('hatemodel/services/vectoriser.pkl', 'rb'))
 
 feature_names = vect2.get_feature_names_out()
 #print("Number of features: {} \n".format(len(feature_names)))
