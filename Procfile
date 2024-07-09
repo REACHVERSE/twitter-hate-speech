@@ -1,1 +1,1 @@
-web: gunicorn hatespeech.asgi:application --log-file -
+web: DJANGO_SETTINGS_MODULE=your_project.settings gunicorn hatespeech.asgi:application --log-file -
