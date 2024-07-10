@@ -3,7 +3,6 @@ from rest_framework.response import Response
 from rest_framework import generics, status, mixins
 from rest_framework.exceptions import ParseError
 import json
-from .services.sentiment import accuracy
 
 from datetime import date, datetime, timedelta
 from django.db.models import Count, Q
@@ -12,6 +11,7 @@ from .models import Prediction, Review
 from .serialisers import PredictionSerializer, ReviewSerializer
 
 from hatemodel.services.prediction import predict
+import pickle
 
 class PredictView(APIView,):
     #serializer_class = PredictionSerializer
@@ -23,7 +23,8 @@ class PredictView(APIView,):
             prediction = predict(predtext)
             print(prediction)
             prediction_obj = Prediction.objects.create(text=predtext, prediction=prediction)
-            predaccuracy = ("{:.2f}%".format(accuracy))
+            #predaccuracy = ("{:.2f}%".format(accuracy))
+            predaccuracy = pickle.load(open("hatemodel/services/accuracy.pkl", "rb"))
 
             return Response(
                 {"text": predtext, "prediction": prediction, "id": prediction_obj.id,  'accuracy' : predaccuracy}, 
