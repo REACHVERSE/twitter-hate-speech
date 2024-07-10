@@ -13,6 +13,8 @@ from .serialisers import PredictionSerializer, ReviewSerializer
 from hatemodel.services.prediction import predict
 import pickle
 
+model_acc = pickle.load(open("hatemodel/services/accuracy.pkl", "rb"))
+
 class PredictView(APIView,):
     #serializer_class = PredictionSerializer
     def post(self, request):
@@ -24,7 +26,7 @@ class PredictView(APIView,):
             print(prediction)
             prediction_obj = Prediction.objects.create(text=predtext, prediction=prediction)
             #predaccuracy = ("{:.2f}%".format(accuracy))
-            predaccuracy = pickle.load(open("hatemodel/services/accuracy.pkl", "rb"))
+            predaccuracy = model_acc
 
             return Response(
                 {"text": predtext, "prediction": prediction, "id": prediction_obj.id,  'accuracy' : predaccuracy}, 
@@ -153,7 +155,7 @@ class PredictionStatsView(APIView):
             'last_week_predictions': last_week_predictions,
             'hate_speech_percentage': total_hate_speech_pct,
             'non_hate_speech_percentage': total_non_hate_speech_pct,
-            'accuracy' : "{:.2f}%".format(accuracy)
+            'accuracy' : model_acc
         }
 
         return Response(response_data)
