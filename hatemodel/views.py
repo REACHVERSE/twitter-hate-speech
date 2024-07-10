@@ -37,6 +37,10 @@ class PredictView(APIView,):
             raise ParseError("Request must be valid JSON")   
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+
+
+        
     
 
 class PredictionListAPIView(generics.ListAPIView):
@@ -45,10 +49,18 @@ class PredictionListAPIView(generics.ListAPIView):
     serializer_class = PredictionSerializer
     queryset = Prediction.objects.all()
 
+
+
+
+
 class PredictionDeleteView(generics.DestroyAPIView):
     serializer_class = PredictionSerializer
     queryset = Prediction.objects.all()
     lookup_field = "pk"
+
+
+
+
 
 class PredictionCountByPredictionView(APIView):
   HATE_SPEECH = "Hate speech detected"
@@ -106,6 +118,10 @@ class PredictionCountByPredictionView(APIView):
     }
 
     return Response(response_data)
+
+
+
+
 
 class ReviewPostView(APIView):
     serializer_class = ReviewSerializer
