@@ -59,7 +59,11 @@ MIDDLEWARE = [
     "django_asgi_lifespan.middleware.LifespanStateMiddleware"
 ]
 
-CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_ALL_ORIGINS = False
+
+CORS_ALLOWED_ORIGINS = [
+    "https://speechclassification.netlify.app"
+]
 
 ROOT_URLCONF = "hatespeech.urls"
 
