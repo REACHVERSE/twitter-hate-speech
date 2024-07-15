@@ -127,6 +127,10 @@ class PredictionCountByPredictionView(APIView):
 class ReviewPostView(APIView):
     serializer_class = ReviewSerializer
     queryset = Review.objects.all()
+    
+    def get(self, request):
+        text = Prediction.objects.last().text
+        return Response({'text':text})
     def post(self, request):
         #print(json.loads(request))
         try:
