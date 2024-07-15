@@ -97,6 +97,7 @@ class PredictionCountByPredictionView(APIView):
     all_days = {day: 0 for day in set(datetime.strftime(pred['date'], "%A") for pred in predictions_hate_speech.union(predictions_no_hate_speech))}
     day_counts_hate_speech = {**all_days, **day_counts_hate_speech}
     day_counts_no_hate_speech = {**all_days, **day_counts_no_hate_speech}
+    #print(all_days)
     print(day_counts_hate_speech)
     print(day_counts_no_hate_speech)
 
