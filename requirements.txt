@@ -14,5 +14,5 @@ uvicorn
 psycopg2-binary
 dj-database-url
 whitenoise
-django_heroku
+# django_heroku
 django-asgi-lifespan
