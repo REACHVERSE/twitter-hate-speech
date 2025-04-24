@@ -1,12 +1,12 @@
 services:
   - type: web
+    name: my-drf-app
+    env: docker
     plan: free
-    name: twitter-hate-speech
-    runtime: python
-    buildCommand: "./build.sh"
-    startCommand: python manage.py runserver 0.0.0.0:$PORT
+    branch: main
+    dockerfilePath: Dockerfile
     envVars:
-      - key: DJANGO_SETTINGS_MODULE
-        value: hatespeech.settings
-      - key: WEB_CONCURRENCY
-        value: 4
+      - key: DJANGO_SECRET_KEY
+        sync: false
+      - key: DATABASE_URL
+        sync: false
