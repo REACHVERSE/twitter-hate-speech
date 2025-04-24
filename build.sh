@@ -11,10 +11,7 @@ export PROJECT_ROOT=$project_root
 pip install -r requirements.txt
 
 #downloading bltk stopwords and punkt
-# python -c "import nltk; nltk.download('stopwords')"
-# python -c "import nltk; nltk.download('punkt')"
-# python -c "import nltk; nltk.download('wordnet')"
-python -m nltk.downloader stopwords punkt wordnet
+python -m nltk.downloader punkt wordnet stopwords
 
 # Convert static asset files
 python manage.py collectstatic --no-input
