@@ -17,7 +17,8 @@ COPY . /app/
 
 RUN chmod +x build.sh
 
-# Add this before the download step
+COPY nltk_data /usr/share/nltk_data
+
 ENV NLTK_DATA=/usr/share/nltk_data
 
 # Ensure the directory exists
