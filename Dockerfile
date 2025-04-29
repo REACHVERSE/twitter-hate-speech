@@ -15,5 +15,14 @@ RUN pip install --upgrade pip && pip install -r requirements.txt
 # Copy project files
 COPY . /app/
 
+RUN chmod +x build.sh
+
+# Add this before the download step
+ENV NLTK_DATA=/usr/share/nltk_data
+
+# Ensure the directory exists
+RUN mkdir -p /usr/share/nltk_data && \
+    python -m nltk.downloader -d /usr/share/nltk_data punkt wordnet stopwords
+
 # Run collectstatic and migrations if needed
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+CMD ["gunicorn", "hatespeech.asgi:application", "-k", "uvicorn.workers.UvicornWorker", "--host", "0.0.0.0", "--port", "8000"]
