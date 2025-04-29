@@ -1,0 +1,20 @@
+# Use LF line endings for all text files (Unix-style, good for Linux/Docker/NLP tools)
+* text=auto eol=lf
+
+# Specifically enforce LF for common text-based file types
+*.py     text eol=lf
+*.txt    text eol=lf
+*.md     text eol=lf
+*.json   text eol=lf
+*.csv    text eol=lf
+
+# NLTK data files (corpora, etc.)
+nltk_data/** text eol=lf
+
+# Binary files (no EOL conversion)
+*.png    binary
+*.jpg    binary
+*.jpeg   binary
+*.gif    binary
+*.zip    binary
+*.gz     binary
