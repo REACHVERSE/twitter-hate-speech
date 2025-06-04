@@ -1,53 +1,57 @@
-import pickle
-from nltk.tokenize import word_tokenize
-from nltk.stem import WordNetLemmatizer
-from nltk.corpus import stopwords
-import pandas as pd
-import os
-project_root = os.getenv('PROJECT_ROOT')
-
-stop_words = set(stopwords.words('english'))
 import re
+import json
+import math
+import numpy as np
+from hatemodel.services.model_code import score
 
-model = pickle.load(open('hatemodel/services/savedmodel.pkl', 'rb'))
-#model = pickle.load(open(os.path.join(project_root,'hatemodel','services','savedmodel.pkl'),'rb'))
+# Load vectorizer data
+with open("hatemodel/services/vectorizer_data.json", "r") as f:
+    vec_data = json.load(f)
+vocab = vec_data["vocab"]
+idf = np.array(vec_data["idf"])
+
+# stop_words = {
+#     "i","me","my","we","our","you","your","he","she","it","they",
+#     "them","this","that","is","are","was","were","a","an","the",
+#     "and","but","or","if","in","on","for","to","with","as","at","by"
+# }
+
+stop_words = {
+    "a", "an", "the", "and", "or", "but", "if", "while", "is", "am", "are", "was", "were", 
+    "be", "been", "being", "have", "has", "had", "do", "does", "did", "so", "such", "too",
+    "very", "of", "at", "by", "for", "with", "about", "against", "between", "into", "through",
+    "during", "before", "after", "above", "below", "to", "from", "up", "down", "in", "out", 
+    "on", "off", "over", "under", "again", "further", "then", "once", "here", "there", "when",
+    "where", "why", "how", "all", "any", "both", "each", "few", "more", "most", "other", 
+    "some", "no", "nor", "not", "only", "own", "same", "than", "can", "will", "just", "don", 
+    "should", "now"
+}
 
 def clean(text):
-        text = str(text).lower()
-        text = re.sub(r"https?://\S+|www\.\S+", "", text, flags = re.MULTILINE)
-        test = re.sub(r"\@w+|\#", "", text)
-        text = re.sub(r"[^\w\s]", "", text)
-        tweet_tokens = word_tokenize(text)
-        text = [word for word in text.split(" ") if word not in stop_words]
-        text = " ".join(text)
-        return text
+    text = str(text).lower()
+    text = re.sub(r"https?://\S+|www\.\S+", "", text)
+    text = re.sub(r"\@\w+|\#", "", text)
+    text = re.sub(r"[^\w\s]", "", text)
+    return text
 
-    #initialising lemmatiser
-lemmatizer = WordNetLemmatizer()
-#defining lemmatizing function
-def lemmatizing(data):
-    tweet = [lemmatizer.lemmatize(w) for w in data]
-    return data
+def preprocess(text):
+    text = clean(text)
+    tokens = [t for t in text.split() if t not in stop_words]
+    return tokens
 
-#declaring the saved vectorizer
-vect = pickle.load(open('hatemodel/services/vectoriser.pkl', 'rb'))
-#vect = pickle.load(open(os.path.join(project_root, 'hatemodel','services','vectorizer.pkl'),'rb'))
-
+def vectorize(text_tokens):
+    vec = np.zeros(len(vocab))
+    for i, word in enumerate(vocab):
+        count = text_tokens.count(word)
+        if count > 0:
+            vec[i] = count * idf[i]
+    norm = np.linalg.norm(vec)
+    return vec / norm if norm != 0 else vec
 
 def predict(data):
-    #defining a function to clean text
-    #print(data)
-    data = lemmatizing(clean(data))
-    input_data = vect.transform(data.split(" "))
-    prediction = model.predict(input_data)
-
-    if 1 in prediction:
-        output = "Hate speech detected"
-
-    else:
-         output = "No hate speech detected"
-    #print(type(prediction))
-    print(output)
-    return output
-    
-
+    tokens = preprocess(data)
+    input_vector = vectorize(tokens)
+    result = score(input_vector.tolist())
+    if isinstance(result, list):  # safety check
+        result = result[0]
+    return "Hate speech detected" if result > 0.5 else "No hate speech detected"
