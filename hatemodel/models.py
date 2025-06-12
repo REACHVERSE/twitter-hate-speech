@@ -1,6 +1,5 @@
 from calendar import day_abbr
 from django.db import models
-from numpy import blackman
 
 
 # Create your models here.

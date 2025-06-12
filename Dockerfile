@@ -2,9 +2,8 @@
 FROM python:3.12-slim
 
 # Set environment variables
-ENV PYTHONDONTWRITEBYTECODE 1
-ENV PYTHONUNBUFFERED 1
-ENV NLTK_DATA=/usr/share/nltk_data
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
 
 # Set work directory
 WORKDIR /app
@@ -18,11 +17,5 @@ COPY . /app/
 
 RUN chmod +x build.sh
 
-COPY nltk_data /usr/share/nltk_data
-
-# Ensure the directory exists
-RUN mkdir -p /usr/share/nltk_data && \
-    python -m nltk.downloader -d /usr/share/nltk_data punkt wordnet stopwords
-
-# Run collectstatic and migrations if needed
-CMD ["gunicorn", "hatespeech.asgi:application", "-k", "uvicorn.workers.UvicornWorker", "--host", "0.0.0.0", "--port", "8000"]
+# Run the app
+CMD ["gunicorn", "hatespeech.asgi:application", "-k", "uvicorn.workers.UvicornWorker", "--bind", "0.0.0.0:8000"]
