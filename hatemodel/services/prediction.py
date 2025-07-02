@@ -1,57 +1,90 @@
 import re
-import json
-import math
+import emoji
+import onnxruntime
 import numpy as np
-from hatemodel.services.model_code import score
+import torch
+from transformers import AutoTokenizer
 
-# Load vectorizer data
-with open("hatemodel/services/vectorizer_data.json", "r") as f:
-    vec_data = json.load(f)
-vocab = vec_data["vocab"]
-idf = np.array(vec_data["idf"])
+# Initialize ONNX runtime session and tokenizer
+tokenizer = AutoTokenizer.from_pretrained('huawei-noah/TinyBERT_General_4L_312D')
+ort_session = onnxruntime.InferenceSession("hatemodel/services/hate_speech_quantized.onnx")
 
-# stop_words = {
-#     "i","me","my","we","our","you","your","he","she","it","they",
-#     "them","this","that","is","are","was","were","a","an","the",
-#     "and","but","or","if","in","on","for","to","with","as","at","by"
-# }
+def preprocess_tweet(text):
+    """The exact same cleaning function used during training"""
+    text = emoji.demojize(text, delimiters=(" ", " "))
+    text = re.sub(r'http\S+|www\S+|https\S+', '', text, flags=re.MULTILINE)
+    text = re.sub(r'@\w+', '', text)
+    text = re.sub(r'#(\w+)', r'\1', text)
+    text = re.sub(r"won't", "will not", text)
+    text = re.sub(r"can't", "cannot", text)
+    text = re.sub(r"n't", " not", text)
+    text = re.sub(r"'re", " are", text)
+    text = re.sub(r"'s", " is", text)
+    text = re.sub(r"'d", " would", text)
+    text = re.sub(r"'ll", " will", text)
+    text = re.sub(r"'ve", " have", text)
+    text = re.sub(r"'m", " am", text)
+    text = re.sub(r'[^\w\s]', '', text)
+    text = re.sub(r'\s+', ' ', text).strip()
+    return text.lower()
 
-stop_words = {
-    "a", "an", "the", "and", "or", "but", "if", "while", "is", "am", "are", "was", "were", 
-    "be", "been", "being", "have", "has", "had", "do", "does", "did", "so", "such", "too",
-    "very", "of", "at", "by", "for", "with", "about", "against", "between", "into", "through",
-    "during", "before", "after", "above", "below", "to", "from", "up", "down", "in", "out", 
-    "on", "off", "over", "under", "again", "further", "then", "once", "here", "there", "when",
-    "where", "why", "how", "all", "any", "both", "each", "few", "more", "most", "other", 
-    "some", "no", "nor", "not", "only", "own", "same", "than", "can", "will", "just", "don", 
-    "should", "now"
-}
+def prepare_bert_input(text, max_length=128):
+    """Tokenize and prepare input for BERT model"""
+    text = preprocess_tweet(text)
+    encoding = tokenizer.encode_plus(
+        text,
+        add_special_tokens=True,
+        max_length=max_length,
+        return_token_type_ids=False,
+        padding='max_length',
+        truncation=True,
+        return_attention_mask=True,
+        return_tensors='np'
+    )
+    return encoding
 
-def clean(text):
-    text = str(text).lower()
-    text = re.sub(r"https?://\S+|www\.\S+", "", text)
-    text = re.sub(r"\@\w+|\#", "", text)
-    text = re.sub(r"[^\w\s]", "", text)
-    return text
+def predict(text):
+    """Make prediction using the ONNX model"""
+    # Preprocess input text using the same function as training
+    encoding = prepare_bert_input(text)
+    
+    # Run inference
+    ort_inputs = {
+        ort_session.get_inputs()[0].name: encoding['input_ids'],
+        ort_session.get_inputs()[1].name: encoding['attention_mask']
+    }
+    logits = ort_session.run(None, ort_inputs)[0]
+    
+    # Get probabilities and prediction
+    probabilities = torch.softmax(torch.tensor(logits), dim=1).numpy()[0]
+    prediction = np.argmax(probabilities)
+    
+    # Return human-readable results
+    label_map = {
+        0: {'label': 'Normal', 'prob': probabilities[0]},
+        1: {'label': 'Offensive', 'prob': probabilities[1]}, 
+        2: {'label': 'Hate', 'prob': probabilities[2]}
+    }
+    
+    return {
+        'prediction': label_map[prediction]['label'],
+        'confidence': float(label_map[prediction]['prob']),
+        'details': label_map
+    }
 
-def preprocess(text):
-    text = clean(text)
-    tokens = [t for t in text.split() if t not in stop_words]
-    return tokens
-
-def vectorize(text_tokens):
-    vec = np.zeros(len(vocab))
-    for i, word in enumerate(vocab):
-        count = text_tokens.count(word)
-        if count > 0:
-            vec[i] = count * idf[i]
-    norm = np.linalg.norm(vec)
-    return vec / norm if norm != 0 else vec
-
-def predict(data):
-    tokens = preprocess(data)
-    input_vector = vectorize(tokens)
-    result = score(input_vector.tolist())
-    if isinstance(result, list):  # safety check
-        result = result[0]
-    return "Hate speech detected" if result > 0.5 else "No hate speech detected"
+# Example usage
+if __name__ == "__main__":
+    test_texts = [
+        "This is a normal tweet about sports.",
+        "Some very offensive comments here! lol",
+        "Women are weak and should not be leaders."
+    ]
+    
+    for text in test_texts:
+        result = predict(text)
+        print(f"\nText: {text}")
+        print(f"Prediction: {result['prediction']}")
+        print(f"Confidence: {result['confidence']:.2f}")
+        print("Details:")
+        for label, info in result['details'].items():
+            print(f"  {info['label']}: {info['prob']:.4f}")
