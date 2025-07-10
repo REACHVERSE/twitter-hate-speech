@@ -43,8 +43,11 @@ def prepare_bert_input(text, max_length=128):
     )
     return encoding
 
-def predict(text):
-    """Make prediction using the ONNX model"""
+def predict(text, confidence_threshold=0.7):
+    """
+    Make prediction using the ONNX model
+    Returns: "Offensive speech detected", "Hate speech detected", or "Normal speech"
+    """
     # Preprocess input text using the same function as training
     encoding = prepare_bert_input(text)
     
@@ -55,36 +58,41 @@ def predict(text):
     }
     logits = ort_session.run(None, ort_inputs)[0]
     
-    # Get probabilities and prediction
+    # Get probabilities
     probabilities = torch.softmax(torch.tensor(logits), dim=1).numpy()[0]
-    prediction = np.argmax(probabilities)
     
-    # Return human-readable results
-    label_map = {
-        0: {'label': 'Normal', 'prob': probabilities[0]},
-        1: {'label': 'Offensive', 'prob': probabilities[1]}, 
-        2: {'label': 'Hate', 'prob': probabilities[2]}
-    }
+    # Get the predicted class and its confidence
+    predicted_class = np.argmax(probabilities)
+    confidence = probabilities[predicted_class]
     
-    return {
-        'prediction': label_map[prediction]['label'],
-        'confidence': float(label_map[prediction]['prob']),
-        'details': label_map
-    }
+    # Return simplified result based on confidence threshold
+    if confidence >= confidence_threshold:
+        if predicted_class == 0:
+            return "Normal speech"
+        elif predicted_class == 1:
+            return "Offensive speech detected"
+        else: 
+            return "Hate speech detected"
+    else:
+        # If confidence is below threshold, return the most likely non-normal class
+        if probabilities[2] > probabilities[1]: 
+            return "Possible hate speech detected (low confidence)"
+        elif probabilities[1] > 0.4: 
+            return "Possible offensive speech detected (low confidence)"
+        else:
+            return "Normal speech"
 
 # Example usage
 if __name__ == "__main__":
     test_texts = [
         "This is a normal tweet about sports.",
         "Some very offensive comments here! lol",
-        "Women are weak and should not be leaders."
+        "Women are weak and should not be leaders.",
+        "This might be borderline offensive",
+        "I kind of dislike those people"
     ]
     
     for text in test_texts:
         result = predict(text)
         print(f"\nText: {text}")
-        print(f"Prediction: {result['prediction']}")
-        print(f"Confidence: {result['confidence']:.2f}")
-        print("Details:")
-        for label, info in result['details'].items():
-            print(f"  {info['label']}: {info['prob']:.4f}")
+        print(f"Result: {result}")
