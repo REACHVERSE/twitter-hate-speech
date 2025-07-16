@@ -1,1 +1,1 @@
-python -m gunicorn hatespeech.asgi:application -k uvicorn.workers.UvicornWorker
+python -m gunicorn hatespeech.asgi:application -k uvicorn.workers.UvicornWorker --timeout 120
