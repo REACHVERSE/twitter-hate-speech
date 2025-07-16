@@ -1,23 +1,31 @@
-"""
-ASGI config for hatespeech project.
-
-It exposes the ASGI callable as a module-level variable named ``application``.
-
-For more information on this file, see
-https://docs.djangoproject.com/en/5.0/howto/deployment/asgi/
-"""
-
 import os
 import logging
 from django.core.asgi import get_asgi_application
+from hatemodel.services.prediction import initialize_model
 
-# Setup logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-logger.info("👋 ASGI application is initializing...")
-
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'hatespeech.settings')
 
-application = get_asgi_application()
+logger.info("👋 ASGI application is initializing...")
+django_app = get_asgi_application()
+logger.info("✅ Django ASGI application instance created.")
 
-logger.info("✅ ASGI application is ready!")
+async def application(scope, receive, send):
+    """
+    The main ASGI application that wraps Django and adds lifespan support.
+    """
+    if scope['type'] == 'lifespan':
+        while True:
+            message = await receive()
+            if message['type'] == 'lifespan.startup':
+                logger.info("🚀 Lifespan startup: Loading ML model and assets...")
+                initialize_model()
+                logger.info("✅ Lifespan startup: Model loaded successfully!")
+                await send({'type': 'lifespan.startup.complete'})
+            elif message['type'] == 'lifespan.shutdown':
+                logger.info("🧹 Lifespan shutdown: Cleaning up resources...")
+                await send({'type': 'lifespan.shutdown.complete'})
+                return
+    else:
+        await django_app(scope, receive, send)
