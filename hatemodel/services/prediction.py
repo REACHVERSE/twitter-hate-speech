@@ -59,8 +59,8 @@ def prepare_bert_input(text, max_length=128):
 
 def predict(text, confidence_threshold=0.7):
     """
-    Make prediction using the ONNX model
-    Returns: "Offensive speech detected", "Hate speech detected", or "Normal speech"
+    Make prediction using the ONNX model.
+    Returns a tuple: (prediction_label, confidence_score)
     """
     if ort_session is None:
         raise RuntimeError("Model is not initialized. Please call initialize_model() first.")
@@ -78,18 +78,25 @@ def predict(text, confidence_threshold=0.7):
     predicted_class = np.argmax(probabilities)
     confidence = probabilities[predicted_class]
     
+    # Format the confidence score as a percentage rounded to two decimal places
+    confidence_score = round(confidence * 100, 2)
+    
     if confidence >= confidence_threshold:
         if predicted_class == 0:
-            return "Normal speech"
+            return "Normal speech", confidence_score
         elif predicted_class == 1:
-            return "Offensive speech detected"
+            return "Offensive speech detected", confidence_score
         else: 
-            return "Hate speech detected"
+            return "Hate speech detected", confidence_score
     else:
-        if probabilities[2] > probabilities[1]: 
-            return "Possible hate speech detected (low confidence)"
-        elif probabilities[1] > 0.4: 
-            return "Possible offensive speech detected (low confidence)"
-        else:
-            return "Normal speech"
+        # For low confidence, determine the most likely non-normal class
+        if probabilities[2] > probabilities[1]: # Leaning towards Hate Speech
+            low_confidence_score = round(probabilities[2] * 100, 2)
+            return "Possible hate speech detected (low confidence)", low_confidence_score
+        elif probabilities[1] > 0.4: # Leaning towards Offensive Speech
+            low_confidence_score = round(probabilities[1] * 100, 2)
+            return "Possible offensive speech detected (low confidence)", low_confidence_score
+        else: # Default to Normal Speech
+            normal_confidence_score = round(probabilities[0] * 100, 2)
+            return "Normal speech", normal_confidence_score
         
