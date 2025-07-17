@@ -5,7 +5,7 @@ from rest_framework.exceptions import ParseError
 import json
 
 from datetime import date, timedelta
-from django.db.models import Count, Q
+from django.db.models import Count
 
 from .models import Prediction, Review
 from .serialisers import PredictionSerializer, ReviewSerializer
@@ -19,11 +19,18 @@ class PredictView(APIView):
             if not predtext:
                 return Response({"error": "No text provided."}, status=status.HTTP_400_BAD_REQUEST)
                 
-            prediction = predict(predtext)
-            prediction_obj = Prediction.objects.create(text=predtext, prediction=prediction)
+            prediction_label, confidence = predict(predtext)
+            
+            prediction_obj = Prediction.objects.create(text=predtext, prediction=prediction_label)
             
             return Response(
-                {"text": predtext, "prediction": prediction, "id": prediction_obj.id, 'accuracy': model_accuracy},
+                {
+                    "text": predtext,
+                    "prediction": prediction_label,
+                    "confidence": confidence,
+                    "id": prediction_obj.id,
+                    'accuracy': model_accuracy
+                },
                 status=status.HTTP_201_CREATED,
             )
         except json.JSONDecodeError:
@@ -48,9 +55,8 @@ class PredictionCountByPredictionView(APIView):
     def get(self, request):
         today = date.today()
         past_week_start = today - timedelta(days=7)
-        filters = Q(date__gte=past_week_start)
         
-        base_queryset = Prediction.objects.filter(filters)
+        base_queryset = Prediction.objects.filter(date__gte=past_week_start)
         
         predictions_hate = base_queryset.filter(prediction=self.HATE_SPEECH).values('date').annotate(count=Count('id'))
         predictions_offensive = base_queryset.filter(prediction=self.OFFENSIVE_SPEECH).values('date').annotate(count=Count('id'))
