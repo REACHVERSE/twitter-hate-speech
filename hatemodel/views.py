@@ -20,7 +20,8 @@ class PredictView(APIView):
             if serializer.is_valid():
                 predtext = serializer.validated_data["text"]
 
-            # predtext = request.data.get("text")
+            print(f"Request data: {request.data}\nText: {predtext}")
+
             if not predtext:
                 return Response({"error": "No text provided."}, status=status.HTTP_400_BAD_REQUEST)
             prediction_label, confidence = predict(predtext)
