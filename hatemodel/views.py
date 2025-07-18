@@ -8,17 +8,24 @@ from datetime import date, timedelta
 from django.db.models import Count
 
 from .models import Prediction, Review
-from .serialisers import PredictionSerializer, ReviewSerializer
+from .serialisers import PredictionSerializer, ReviewSerializer, PredictSerializer
 
 from hatemodel.services.prediction import predict, model_accuracy
 
 class PredictView(APIView):
     def post(self, request):
         try:
-            predtext = request.data.get("text")
+            predtext = None
+            serializer = PredictSerializer(data=request.data)
+            if serializer.is_valid():
+                predtext = serializer.validated_data["text"]
+
+            print(request.data)
+            print(predtext)
+                
+            # predtext = request.data.get("text")
             if not predtext:
                 return Response({"error": "No text provided."}, status=status.HTTP_400_BAD_REQUEST)
-                
             prediction_label, confidence = predict(predtext)
             
             prediction_obj = Prediction.objects.create(text=predtext, prediction=prediction_label)
@@ -27,9 +34,8 @@ class PredictView(APIView):
                 {
                     "text": predtext,
                     "prediction": prediction_label,
-                    "confidence": confidence,
                     "id": prediction_obj.id,
-                    'accuracy': model_accuracy
+                    'accuracy': f"{confidence:.2f}"
                 },
                 status=status.HTTP_201_CREATED,
             )

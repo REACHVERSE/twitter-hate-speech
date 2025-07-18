@@ -22,3 +22,6 @@ class ReviewSerializer(serializers.ModelSerializer):
             "remarks",
             "classification"
         ]
+        
+class PredictSerializer(serializers.Serializer):
+    text = serializers.CharField()
